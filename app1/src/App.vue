@@ -1,7 +1,19 @@
 <template>
-  <router-view/>
+  <router-view v-slot="{ Component }">
+    <keep-alive :include="keepAliveList">
+      <component :is="Component" />
+    </keep-alive>
+  </router-view>
 </template>
 
-<style lang="scss">
+<script>
+import { mapGetters } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['keepAliveList'])
+  }
+}
+</script>
 
+<style>
 </style>

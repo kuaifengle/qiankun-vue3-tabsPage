@@ -7,10 +7,10 @@
         :class="{ tab: true, active: item.path === activeTab.path }"
         @click.stop="changeTab(item)"
       >
-        <div class="tab-wrap">
-          <span class="tab-title">{{ item.title || item.path }}</span>
-          <el-icon>
-            <Close @click.stop="removeTab(item)" />
+        <div class="tab-wrap" :title="item.title">
+          <span class="tab-title">{{ item.title }}</span>
+          <el-icon v-if="tabsList.length > 1">
+            <Close @click.stop="removeTab(item, index)" />
           </el-icon>
         </div>
       </div>
@@ -20,62 +20,43 @@
 
 <script>
 import { Close } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
 import { mapGetters } from 'vuex'
-// import { onMounted, watch } from 'vue'
-// import { createMicroApp } from '@/qiankun/index.js'
-import tabs from '@/qiankun/tabs'
+import tabs from '@/qiankun/tabs.js'
 
 export default {
   components: {
-    Close,
+    Close
   },
   computed: {
     ...mapGetters({
-      tabsList: 'tabsList',
-      activeTab: 'activeTab',
-    }),
+      tabsList: 'tabs/tabsList',
+      activeTab: 'tabs/activeTab'
+    })
   },
-  setup() {
-    // let store = useStore()
-    let router = useRouter()
-
-    let changeTab = (item) => {
-      // tabs.switchTab(item)
-      router.push(item.fullPath)
-    }
-
-    let removeTab = (item) => {
+  methods: {
+    changeTab(item) {
+      this.$router.push(item.fullPath)
+    },
+    removeTab(item) {
+      if (this.tabsList.length === 1) {
+        return
+      }
       tabs.closeTab(item)
     }
-
-    return {
-      removeTab,
-      changeTab,
-      //   selectTabs
-    }
-  },
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 .tabBar {
   display: block;
-  width: 100%;
-  height: 32px;
-
+  height: 42px;
+  margin: 0 -20px;
   position: relative;
-  overflow: hidden;
-  &::before {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    content: '';
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.1);
-  }
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: #f2f2f2;
+  margin-bottom: 24px;
   .tabs {
     position: absolute;
     left: 0;
@@ -83,39 +64,13 @@ export default {
     bottom: 0;
     display: flex;
     flex-flow: row nowrap;
-    padding: 0 24px;
+    padding: 0 12px;
     .tab {
       position: relative;
-      background: #d6dae0;
-      border-radius: 4px 4px 0px 0px;
+      background: #f2f2f2;
       transition: all 0.2s ease;
-      width: 160px;
-      min-width: 50px;
-      &:before {
-        content: '';
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-bottom: 4px solid transparent;
-        border-right: 4px solid transparent;
-        border-bottom-right-radius: 100%;
-        left: -10px;
-        bottom: -4px;
-        transition: all 0.2s ease;
-      }
-      &:after {
-        content: '';
-        position: absolute;
-        width: 10px;
-        height: 10px;
-        border-bottom: 4px solid transparent;
-        border-left: 4px solid transparent;
-        border-bottom-left-radius: 100%;
-        right: -10px;
-        bottom: -4px;
-        z-index: 1;
-        transition: all 0.2s ease;
-      }
+      width: 193px;
+      min-width: 60px;
       .tab-wrap {
         position: relative;
         display: flex;
@@ -123,7 +78,10 @@ export default {
         user-select: none;
         text-align: center;
         font-size: 14px;
-        padding: 6px 4px;
+        height: 42px;
+        line-height: 42px;
+        padding: 0 12px;
+        text-align: center;
         cursor: pointer;
         overflow: hidden;
         .tab-title {
@@ -139,68 +97,33 @@ export default {
           margin-left: auto;
           color: #999999;
           font-weight: 600;
+          font-size: 0px;
+          transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+          &:hover {
+            color: #096dd9;
+          }
         }
       }
 
-      &:not(.active):not(:hover) {
-        .tab-wrap {
-          &:before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            width: 0.5px;
-            height: 12px;
-            opacity: 0.5;
-            background: #a2a4a6;
-          }
-          &:after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            right: 0;
-            transform: translateY(-50%);
-            width: 0.5px;
-            height: 12px;
-            opacity: 0.5;
-            background: #a2a4a6;
-          }
-        }
-      }
-      &:first-of-type {
-        .tab-wrap {
-          &:before {
-            opacity: 0 !important;
-          }
-        }
-      }
-      &:last-of-type {
-        .tab-wrap {
-          &:after {
-            opacity: 0 !important;
-          }
-        }
-      }
-      &.active,
       &:hover {
         overflow: initial;
-        background: #f0f0f0;
-        color: #2979ff;
-        border-radius: 4px 4px 0px 0px;
-        transform: scaleX(1.009);
+        background: #f8f8f8;
         z-index: 1;
         transition: all 0.2s ease;
-      }
-      &.active,
-      &:hover {
-        &:before {
-          border-bottom: 4px solid #f0f0f0;
-          border-right: 4px solid #f0f0f0;
+        i {
+          font-size: 16px;
         }
-        &:after {
-          border-bottom: 4px solid #f0f0f0;
-          border-left: 4px solid #f0f0f0;
+      }
+
+      &.active {
+        color: #096dd9;
+        overflow: initial;
+        background: #ffffff;
+        z-index: 1;
+        transition: all 0.2s ease;
+        i {
+          font-size: 16px;
+          color: #096dd9;
         }
       }
     }

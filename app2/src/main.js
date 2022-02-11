@@ -31,8 +31,8 @@ let router = null;
 function render(props = {}) {
     const {
         container,
+        $parentRouter,
         routerEvent,
-        // setGlobalState
     } = props;
 
     router = createRouter({
@@ -68,6 +68,9 @@ function render(props = {}) {
         methods: {}
     })
 
+    // 定义父组件路由对象
+    instance.config.globalProperties.$parentRouter = $parentRouter
+
     instance.use(ElementPlus, {
         size: 'default',
         zIndex: 3000,
@@ -79,11 +82,12 @@ function render(props = {}) {
 
     instance.mount(container ? container.querySelector('#app2') : '#app2');
     if (routerEvent) {
-        // 如果首次跳转子页面
+        // 如果首次跳转子页面就直接跳到父级页面 
         let path = routes.find(item => item.path === routerEvent.path)
         if (path['meta'] && path['meta']['parentName']) {
             let parent = routes.find(item => item.name === path['meta']['parentName'])
-            router.push(parent.path)
+            $parentRouter.push(parent.path)
+            store.commit('PUSH_KEEPALIVE_LIST', parent.name)
             store.commit('PUSH_KEEPALIVE_LIST', parent.name)
             action.setGlobalState({
                 changeMicoTabsPath: {
@@ -123,7 +127,7 @@ export async function mount(props) {
 }
 
 export async function update(props) {
-    console.log('update props', props);
+    // console.log('update props', props);
     let {
         routerEvent
     } = props
@@ -146,7 +150,6 @@ export async function update(props) {
 
 
 export async function unmount() {
-    console.log('app2销毁了')
     instance.unmount();
     instance._container.innerHTML = '';
     instance = null;

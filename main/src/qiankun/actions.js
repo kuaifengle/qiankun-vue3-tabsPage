@@ -1,43 +1,62 @@
 import {
   initGlobalState
 } from 'qiankun';
-// import tabs from '@/qiankun/tabs.js'
-import store from '@/store/index.js'
+import {
+  reactive
+} from 'vue'
+import store from '@/store/index'
 
-const initialState = {
-  path: '',
-  changeMicoTabsPath: {}
-}
+let initialState = reactive({
+  changeMicoTabsPath: {} // 微应用tab数据
+})
 
-// 初始化 state
+// 全局状态
 const actions = initGlobalState(initialState);
 
-actions.onGlobalStateChange((state) => {
+actions.onGlobalStateChange((newState) => {
   // state: 变更后的状态; prev 变更前的状态
-  // console.log(state, prev);
-  for (const key in state) {
+  // console.log('main change', JSON.stringify(newState), JSON.stringify(prev))
+  for (const key in newState) {
     switch (key) {
+      // 监听微应用tab切换
       case 'changeMicoTabsPath':
-        if (state['changeMicoTabsPath'].type === 'change') {
+        if (newState['changeMicoTabsPath'].type === 'change') {
+          // 改变微应用子页面
           let getters = store.getters
-          let activeTab = getters.activeTab;
-          let tabList = getters.tabsList.slice()
+          let activeTab = getters['tabs/activeTab'];
+          let tabList = getters['tabs/tabsList'].slice()
           let index = tabList.indexOf(tabList.find((item) => item.path === activeTab.path))
           let obj = {
-            path: state['changeMicoTabsPath']['to']['path'],
-            fullPath: state['changeMicoTabsPath']['to']['fullPath'],
-            query: state['changeMicoTabsPath']['to']['query'],
-            appName: state['changeMicoTabsPath']['appName'],
+            path: newState['changeMicoTabsPath']['to']['path'],
+            fullPath: newState['changeMicoTabsPath']['to']['fullPath'],
+            query: newState['changeMicoTabsPath']['to']['query'],
+            appName: newState['changeMicoTabsPath']['appName']
           }
           tabList[index] = obj
-          store.commit('CLOSE_TABS_LIST', tabList)
-          store.commit('CHANGE_ACTIVE_TAB', obj)
-          // tabs.switchTab(obj)
-          state['changeMicoTabsPath'] = null;
+          store.commit('tabs/CLOSE_TABS_LIST', tabList)
+          store.commit('tabs/CHANGE_ACTIVE_TAB', obj)
+          newState['changeMicoTabsPath'] = null;
+        } else if (newState['changeMicoTabsPath'].type === 'closeActiveTab') {
+          // 关闭当前活跃的tab
+          store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
+          newState['changeMicoTabsPath'] = null;
         }
+        break;
+      default:
+        initialState[key] = newState[key]
         break;
     }
   }
-});
+})
 
-export default actions
+// 定义一个获取state的方法下发到子应用
+actions.getGlobalState = async function (key) {
+  // 有key，表示取globalState下的某个子级对象
+  // 无key，表示取全部
+  switch (key) {
+    default:
+      return key ? initialState[key] : initialState
+  }
+}
+
+export default actions;
