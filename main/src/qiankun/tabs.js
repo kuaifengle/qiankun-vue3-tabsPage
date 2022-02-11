@@ -2,9 +2,6 @@ import {
     loadMicroApp
 } from 'qiankun';
 
-import {
-    menuTitleData
-} from '@/menuData/index.js';
 import actions from './actions.js';
 import {
     microAppConfig
@@ -80,7 +77,7 @@ class Tabs {
                     // 否者就添加tab页
                     store.dispatch('tabs/pushTabsList', {
                         ...routeObj,
-                        title: menuTitleData[path] || query.pageTabTitle
+                        title: query.pageTabTitle
                     })
                 }
                 setTimeout(() => {
@@ -111,7 +108,7 @@ class Tabs {
             })
 
             setTimeout(() => {
-                routeObj.title = menuTitleData[path] || query.pageTabTitle
+                routeObj.title = query.pageTabTitle
                 console.log(routeObj)
                 store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
                 store.dispatch('tabs/pushTabsList', routeObj)

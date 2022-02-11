@@ -3,12 +3,11 @@
     <el-header class="clearfix"></el-header>
     <el-container class="layout-main">
       <el-aside id="asideLeft" :width="'210px'">
-        <!-- <div v-for="(item, index) in linkList" :key="index" @click="openLink(item)">{{item.title}}</div> -->
         <router-link v-for="(item, index) in linkList" :key="index" :to="item.path">{{item.title}}</router-link>
       </el-aside>
       <el-main id="mainBox">
         {{keepAliveList['iframe'] }}
-        <pageTabs></pageTabs>
+        <tabs></tabs>
         <div v-show="!$route.name">
           <div
             v-show="item.name === activeTab.appName"
@@ -34,16 +33,12 @@
 <script>
 import { microAppConfig } from '@/qiankun/config.js'
 
-import pageTabs from './pageTabs.vue'
+import tabs from './tabs.vue'
 import { mapGetters } from 'vuex'
-// import { useRouter } from 'vue-router'
-
-// import { createMicroApp } from '@/qiankun/index.js'
-import tabs from '@/qiankun/tabs'
 
 export default {
   components: {
-    pageTabs,
+    tabs,
   },
   data() {
     return {
@@ -51,7 +46,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['keepAliveList', 'activeTab']),
+     ...mapGetters({
+      keepAliveList: 'tabs/keepAliveList',
+      activeTab: 'tabs/activeTab'
+    })
   },
   setup() {
     let linkList = [
@@ -84,15 +82,9 @@ export default {
         path: '/app2/about',
       },
     ]
-    // let router = useRouter()
-    let openLink = (item) => {
-      tabs.openTab(item)
-      // createMicroApp(item)
-      // router.replace(item.path)
-    }
+
     return {
-      openLink,
-      linkList,
+      linkList
     }
   },
 }
