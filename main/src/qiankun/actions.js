@@ -27,6 +27,7 @@ actions.onGlobalStateChange((newState) => {
           let tabList = getters['tabs/tabsList'].slice()
           let index = tabList.indexOf(tabList.find((item) => item.path === activeTab.path))
           let obj = {
+            title: tabList[index]['title'],
             path: newState['changeMicoTabsPath']['to']['path'],
             fullPath: newState['changeMicoTabsPath']['to']['fullPath'],
             query: newState['changeMicoTabsPath']['to']['query'],

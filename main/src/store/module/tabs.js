@@ -41,6 +41,7 @@ export default {
                     }
                     // 如果微应用没有活跃的tab了就销毁
                     if (!tabList.some((item) => item.appName === appName)) {
+                        console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
                         installApp[appName].unmount()
                         delete installApp[appName]
                         commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)

@@ -7,8 +7,16 @@
         :class="{ tab: true, active: item.path === activeTab.path }"
         @click.stop="changeTab(item)"
       >
-        <div class="tab-wrap" :title="item.title">
-          <span class="tab-title">{{ item.title }}</span>
+        <div class="tab-wrap">
+          <el-tooltip
+            :show-after="400 "
+            :content="item.title"
+            placement="bottom"
+            effect="customized"
+            :show-arrow="false"
+          >
+            <span class="tab-title">{{ item.title }}</span>
+          </el-tooltip>
           <el-icon v-if="tabsList.length > 1">
             <Close @click.stop="removeTab(item, index)" />
           </el-icon>
@@ -25,13 +33,13 @@ import tabs from '@/qiankun/tabs.js'
 
 export default {
   components: {
-    Close
+    Close,
   },
   computed: {
     ...mapGetters({
       tabsList: 'tabs/tabsList',
-      activeTab: 'tabs/activeTab'
-    })
+      activeTab: 'tabs/activeTab',
+    }),
   },
   methods: {
     changeTab(item) {
@@ -42,8 +50,8 @@ export default {
         return
       }
       tabs.closeTab(item)
-    }
-  }
+    },
+  },
 }
 </script>
 
