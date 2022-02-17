@@ -1,4 +1,4 @@
-## Vue3项目+ qiankun.js 实现多tab标签页路由切换
+## Vue3.0 + qiankun.js 实现多tab标签页路由切换
 
 ```
 原理是通过监听主应用的vue-router的 router.beforeEach 方法来动态加载(loadMicroApp)微应用页面
