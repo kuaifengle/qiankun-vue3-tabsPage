@@ -15,6 +15,13 @@
 "vuex": "^4.0.0-0"
 ```
 
+#### Gif演示
+
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/1.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/3.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/4.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/5.gif?raw=true" width="60%"/>
+
 #### 路由配置修改
 ```
 主应用使用的是: createWebHistory();
