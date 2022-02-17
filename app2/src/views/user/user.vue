@@ -1,6 +1,7 @@
 <template>
   <h1>App2 UserUserUserUserUserUserUserUserUserUserUserUser</h1>
   <router-link to="/app2/user/detail">to userDetail</router-link>
+  <el-button @click="$router.push('/app2/about')">点击跳转about</el-button>
 </template>
 
 <script>

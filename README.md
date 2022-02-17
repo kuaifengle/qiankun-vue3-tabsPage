@@ -1,44 +1,108 @@
 # qiankun-vue3-tabsPage
-qiankun+vue3.0+vue-router4.0+ vuex4.0 实现tabs标签的路由切换
+## Vue3项目+ qiankun.js 实现多tab标签页路由切换
 
-### 使用方法
 ```
-    每个vue文件都要定义 [name] 属性, 并且要与 router/index.js 内部定义页面参数的 [name] 相同 如:
-    export default {
-        name: 'App1Detail',
-        setup() {},
-        methods: {}
-    }
+各依赖版本
+"element-plus": "^1.3.0-beta.5",
+"qiankun": "^2.6.3",
+"vue": "^3.0.0",
+"vue-router": "^4.0.0-0",
+"vuex": "^4.0.0-0"
+```
 
-    ...
-     routes = [
-        {
-            path: appPath + '/detail',
-            name: 'App1Detail',
-            component: () => import( '@/views/app1/detail.vue'),
-            meta: {
-                childrenName: ['Zftdcrzrsfsb', 'Zffcjysbhzlfsb']
-            }
-        }
-     ]
+
+#### 路由配置修改
+```
+主应用使用的是: createWebHistory();
+微应用使用的是: createMemoryHistory(window.__POWERED_BY_QIANKUN__ ? '' : `/subPages/app1/`);
+
+每个vue文件都要定义 [name] 属性, 并且要与 router/index.js 内部定义页面参数的 [name] 相同 如:
+lib: src/views/user.vue
+export default {
+    name: 'App1Detail',         >>>=====
+    setup() {},                         |
+    methods: {},                        |
+    ...                                 |
+}                                       |
+                                        |=====>>>  2个name的值要相同
+...                                     |
+lib: src/router/index.js                |
+    routes = [                             |
+    {                                   |
+        path: appPath + '/detail',      |
+        name: 'App1Detail',     <<<=====
+        component: () => import( '@/views/app1/detail.vue')
+    }
+    ]
 ```
 
 ### 路由使用方法
+#### 主应用中路由跳转
 ```
-router.push 只能用于跳转当前微应用页面
+主应用使用的是原生的vue-router的方法
+无论是在主应用中跳转主应用页面          主=>主应用页面
+还是在主应用中跳转微应用页面            主=>微应用页面
 
-跳转非当前微应用的其他路由页面, 如
+router.push()
+router.replace()
+router.go(-1)
+...
+```
+#### 微应用中路由跳转
+```
+微应用跳转自身页面也和原生的vue-router的使用方法一致
+参考lib: app2/src/views/user/**
+
+router.push()
+router.replace()
+router.go(-1)
+...
+
+============================ 分割线  =================================
+
+从A微应用跳转B微应用的子页面, 如:
+参考lib: app1/src/views/about.vue
+...
     import { getCurrentInstance } from 'vue'
-    const instance = getCurrentInstance()
-    let jump = () => {
-     instance.appContext.config.globalProperties.$parentRouter.push('/home')
-    }
 
-关闭当前活跃tab
-    store.dispatch('global/setGlobalState', {
-        changeMicoTabsPath: {
-            type: "closeActiveTab"
+    setup() {
+        const instance = getCurrentInstance()
+
+        let jump = () => {
+            instance.appContext.config.globalProperties.$parentRouter.push('/app2/user')
         }
+
+        return {
+            jump
+        }
+    }
+...
+
+============================ 分割线  =================================
+
+在微应用中关闭当前活跃的tab标签,如:
+参考lib: app1/src/views/user.vue
+
+    let closeActiveTab = () => {
+    action.setGlobalState({
+        changeMicoTabsPath: {
+            type: 'closeActiveTab',
+        },
     })
+}
+
+============================ 分割线  =================================
+
+在微应用中关闭当前已加载的其他tab标签,如:
+参考lib: app1/src/views/user.vue
+
+let closeOtherTab = () => {
+    action.setGlobalState({
+        changeMicoTabsPath: {
+            type: 'closeOtherTab',
+            path: '/app1/about',
+        },
+    })
+}
 
 ```
