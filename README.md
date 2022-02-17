@@ -4,6 +4,8 @@
 原理是通过监听主应用的vue-router的 router.beforeEach 方法来动态加载(loadMicroApp)微应用页面
 用vuex来管理已加载的微应用和tab标签数据
 监听用initialState的变化来执行对微页面内部的路由跳转
+用keep-alive来缓存主应用和微应用的页面
+关闭微应用页面的tab时修改keep-alive的值并判断是否需要销毁微应用
 ```
 
 ```
