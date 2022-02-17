@@ -1,9 +1,11 @@
-## Vue3项目+ qiankun.js 实现多tab标签页路由切换
+## Vue3.0 + qiankun.js 实现多tab标签页路由切换
 
 ```
 原理是通过监听主应用的vue-router的 router.beforeEach 方法来动态加载(loadMicroApp)微应用页面
 用vuex来管理已加载的微应用和tab标签数据
 监听用initialState的变化来执行对微页面内部的路由跳转
+用keep-alive来缓存主应用和微应用的页面
+关闭微应用页面的tab时修改keep-alive的值并判断是否需要销毁微应用
 ```
 
 ```
@@ -14,6 +16,13 @@
 "vue-router": "^4.0.0-0",
 "vuex": "^4.0.0-0"
 ```
+
+#### Gif演示
+
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/1.gif?raw=true" width="100%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/3.gif?raw=true" width="100%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/4.gif?raw=true" width="100%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/5.gif?raw=true" width="100%"/>
 
 #### 路由配置修改
 ```
@@ -110,3 +119,5 @@ let closeOtherTab = () => {
 }
 
 ```
+
+如果觉得有用的话,还请给个Star😁😁😁
