@@ -2,7 +2,7 @@
   <h1>App2 userDetailuserDetailuserDetailuserDetailuserDetailuserDetail</h1>
   <router-link to="/app2/user">to user</router-link>
   <el-input v-model="value" placeholder></el-input>
-  <e-button @click="$router.go(-1)">返回User</e-button>
+  <el-button @click="$router.push('/app2/user')">返回User</el-button>
 </template>
 
 <script>
