@@ -17,10 +17,10 @@
 
 #### Gif演示
 
-<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/1.gif?raw=true" width="60%"/>
-<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/3.gif?raw=true" width="60%"/>
-<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/4.gif?raw=true" width="60%"/>
-<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/tree/master/gif/5.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/1.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/3.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/4.gif?raw=true" width="60%"/>
+<img src="https://github.com/kuaifengle/qiankun-vue3-tabsPage/blob/master/gif/5.gif?raw=true" width="60%"/>
 
 #### 路由配置修改
 ```
