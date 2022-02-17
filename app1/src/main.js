@@ -27,7 +27,7 @@ function render(props = {}) {
     } = props;
 
     router = createRouter({
-        history: createMemoryHistory(window.__POWERED_BY_QIANKUN__ ? '/app1' : `/subPages/app1/`),
+        history: createMemoryHistory(window.__POWERED_BY_QIANKUN__ ? '' : `/subPages/app1/`),
         routes
     })
 
