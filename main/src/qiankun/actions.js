@@ -41,6 +41,15 @@ actions.onGlobalStateChange((newState) => {
           // 关闭当前活跃的tab
           store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
           newState['changeMicoTabsPath'] = null;
+        } else if (newState['changeMicoTabsPath'].type === 'closeOtherTab') {
+          // 关闭其他的的tab
+          let find = store.getters['tabs/tabsList'].find((item) => item.path === newState['changeMicoTabsPath'].path)
+          if (find) {
+            store.dispatch('tabs/closeTabsList', find)
+          } else {
+            console.warn(newState['changeMicoTabsPath'].path + '关闭失败,该页面不在[tabs/tabsList]中!!!')
+          }
+          newState['changeMicoTabsPath'] = null;
         }
         break;
       default:

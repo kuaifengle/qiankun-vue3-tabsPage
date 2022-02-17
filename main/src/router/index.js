@@ -1,7 +1,6 @@
 import {
   createRouter,
-  createWebHistory,
-  // createMemoryHistory
+  createWebHistory
 } from 'vue-router'
 
 // import store from '@/store/index.js'
@@ -18,6 +17,10 @@ const routes = [{
   name: 'Layout',
   component: Layout,
   children: [{
+      path: '/',
+      redirect: '/home'
+    },
+    {
       path: '/home',
       name: 'Home',
       component: Home,

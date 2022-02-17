@@ -1,17 +1,19 @@
 import Home from '../views/Home.vue'
 
+const appPath = '/app1'
+
 const routes = [{
-    path: '/',
+    path: appPath + '/',
     name: 'Home',
     component: Home
   },
   {
-    path: '/about',
+    path: appPath + '/about',
     name: 'About',
     component: () => import( /* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/user',
+    path: appPath + '/user',
     name: 'User',
     component: () => import( /* webpackChunkName: "about" */ '../views/user.vue')
   }

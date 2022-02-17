@@ -2,11 +2,28 @@
   <el-container class="layout-box">
     <el-header class="clearfix"></el-header>
     <el-container class="layout-main">
-      <el-aside id="asideLeft" :width="'210px'">
-        <router-link v-for="(item, index) in linkList" :key="index" :to="item.path">{{item.title}}</router-link>
+      <el-aside id="asideLeft" width="210px">
+        <el-menu
+          :uniqueOpened="true"
+          active-text-color="#ffd04b"
+          background-color="#545c64"
+          class="el-menu-vertical-demo"
+          text-color="#fff"
+          :default-active="$route.path + ''"
+          router
+        >
+          <template v-for="(item, index) in menuDataList" :key="index">
+            <el-menu-item :index="item.path" :title="item.title">
+              <i v-if="item.icon" :class="['iconfont', item.icon]"></i>
+              <template #title>
+                <span>{{ item.title }}</span>
+              </template>
+            </el-menu-item>
+          </template>
+        </el-menu>
       </el-aside>
       <el-main id="mainBox">
-        {{keepAliveList['iframe'] }}
+        <div>主应用的已缓存的页面有: =====> {{ keepAliveList['iframe'] || '[暂无]' }}</div>
         <tabs></tabs>
         <div v-show="!$route.name">
           <div
@@ -34,6 +51,7 @@
 import { microAppConfig } from '@/qiankun/config.js'
 
 import tabs from './tabs.vue'
+import { menuDataList } from '@/menuData/index.js'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -43,50 +61,16 @@ export default {
   data() {
     return {
       microAppConfig,
+      menuDataList,
     }
   },
   computed: {
-     ...mapGetters({
+    ...mapGetters({
       keepAliveList: 'tabs/keepAliveList',
-      activeTab: 'tabs/activeTab'
-    })
+      activeTab: 'tabs/activeTab',
+    }),
   },
-  setup() {
-    let linkList = [
-      {
-        title: 'Home',
-        path: '/home',
-      },
-      {
-        title: 'About',
-        path: '/about?id=123123123',
-      },
-      {
-        title: 'User',
-        path: '/user',
-      },
-      // {
-      //   title: 'to App1 User',
-      //   path: '/app1/user',
-      // },
-      // {
-      //   title: 'to App1 About',
-      //   path: '/app1/about',
-      // },
-      {
-        title: 'to App2 User',
-        path: '/app2/user?page=1&max=10',
-      },
-      {
-        title: 'to App2 About',
-        path: '/app2/about',
-      },
-    ]
-
-    return {
-      linkList
-    }
-  },
+  setup() {},
 }
 </script>
 
@@ -126,60 +110,9 @@ export default {
     }
   }
 }
-.el-aside {
-  background: #ccc;
-  position: relative;
-  z-index: 11;
-  display: flex;
-  flex-direction: column;
-
-  .menu-input {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    width: 100%;
-    padding: 0 12px;
-    box-sizing: border-box;
-
-    .el-input__inner {
-      border-color: #fff;
-      border-radius: 20px;
-      background: transparent;
-      color: #fff;
-    }
-    .el-input__prefix {
-      .el-icon {
-        color: #fff;
-      }
-    }
-  }
-
-  #dragBar {
-    position: absolute;
-    z-index: 10;
-    right: 0;
-    width: 6px;
-    height: 100%;
-    background: transparent;
-    border-right: 2px dashed transparent;
-    cursor: ew-resize;
-    &:hover {
-      border-right-color: #fff;
-    }
-  }
-}
 
 .el-main {
   padding-top: 0 !important;
   position: relative;
-}
-
-.el-dropdown-menu__item.is-disabled {
-  cursor: default !important;
-  color: #606266 !important;
-}
-.backtop {
-  right: 40px;
-  bottom: 75px;
-  opacity: 0.75;
 }
 </style>

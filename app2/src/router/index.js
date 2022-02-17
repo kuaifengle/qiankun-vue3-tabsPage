@@ -1,13 +1,6 @@
-// import Home from '../views/Home.vue'
-
-const routes = [
-  // {
-  //   path: '/',
-  //   name: 'Home',
-  //   component: Home
-  // },
-  {
-    path: '/app2/user',
+const appPath = '/app2'
+const routes = [{
+    path: appPath + '/user',
     name: 'User',
     component: () => import( /* webpackChunkName: "about" */ '../views/user/user.vue'),
     meta: {
@@ -15,7 +8,7 @@ const routes = [
     }
   },
   {
-    path: '/app2/userDetail',
+    path: appPath + '/user/detail',
     name: 'UserDetail',
     component: () => import( /* webpackChunkName: "about" */ '../views/user/userDetail.vue'),
     meta: {
@@ -23,18 +16,10 @@ const routes = [
     }
   },
   {
-    path: '/app2/about',
+    path: appPath + '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "about" */ '../views/About.vue')
   }
 ]
-
-// export const beforeEach = (router) => {
-
-// }
-
 
 export default routes

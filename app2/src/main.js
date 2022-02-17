@@ -27,7 +27,7 @@ function render(props = {}) {
     } = props;
 
     router = createRouter({
-        history: createMemoryHistory(window.__POWERED_BY_QIANKUN__ ? '/app2' : `/subPages/app2/`),
+        history: createMemoryHistory(window.__POWERED_BY_QIANKUN__ ? '' : `/subPages/app2/`),
         routes
     })
 
@@ -37,6 +37,7 @@ function render(props = {}) {
                 parentName,
                 childrenName
             } = to.meta
+
             // 判断如果是父级跳转子集页面 或者 子集跳转父级页面
             if ((parentName && parentName === _form.name) || (childrenName && childrenName.some((item) => item === _form.name))) {
                 store.commit('CLOSE_KEEPALIVE_LIST', _form)
@@ -122,6 +123,7 @@ export async function update(props) {
     let {
         routerEvent
     } = props
+
     if (routerEvent) {
         switch (routerEvent.type) {
             case 'push':
@@ -141,6 +143,7 @@ export async function update(props) {
 
 
 export async function unmount() {
+    store.commit('RESET_KEEPALIVE_LIST', [])
     instance.unmount();
     instance._container.innerHTML = '';
     instance = null;

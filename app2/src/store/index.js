@@ -15,6 +15,9 @@ export default createStore({
     ['CLOSE_KEEPALIVE_LIST'](state, data) {
       state.keepAliveList = state.keepAliveList.filter(item => item !== data.name)
     },
+    ['RESET_KEEPALIVE_LIST'](state) {
+      state.keepAliveList = []
+    },
   },
   actions: {},
   modules: {},

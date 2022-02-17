@@ -3,7 +3,7 @@ import {
 } from 'qiankun';
 
 import {
-    menuTitleData
+    menusTitleMap
 } from '@/menuData/index.js';
 import actions from './actions.js';
 import {
@@ -71,7 +71,8 @@ class Tabs {
 
             // 先判断微应用是否已加载过
             if (Object.hasOwnProperty.call(installAppMap, appConfig.name)) {
-                const find = store.getters['tabs/tabsList'].find((item) => item.path === path)
+                // 寻找是否存在页面 或者 存在它的父页面
+                const find = store.getters['tabs/tabsList'].find((item) => item.path.startsWith(path))
 
                 // 如果已经加载过页面了就切换tab
                 if (find) {
@@ -80,7 +81,7 @@ class Tabs {
                     // 否者就添加tab页
                     store.dispatch('tabs/pushTabsList', {
                         ...routeObj,
-                        title: menuTitleData[path] || query.pageTabTitle
+                        title: menusTitleMap[path] || query.pageTabTitle
                     })
                 }
                 setTimeout(() => {
@@ -111,7 +112,7 @@ class Tabs {
             })
 
             setTimeout(() => {
-                routeObj.title = menuTitleData[path] || query.pageTabTitle
+                routeObj.title = menusTitleMap[path] || query.pageTabTitle
                 store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
                 store.dispatch('tabs/pushTabsList', routeObj)
             }, 4)

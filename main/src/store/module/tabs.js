@@ -1,7 +1,7 @@
 import router from '@/router/index.js'
 
 // tab最多个数
-const pageTabMax = 6;
+const pageTabMax = 3;
 
 export default {
     namespaced: true,
@@ -39,8 +39,8 @@ export default {
                     let installApp = {
                         ...getters.installAppMap
                     }
-                    // 如果微应用没有活跃的tab了就销毁
-                    if (!tabList.some((item) => item.appName === appName)) {
+                    // 如果微应用没有活跃的tab了就销毁 并且 跳转的不是当前微应用的页面
+                    if (!tabList.some((item) => item.appName === appName) && appName !== data.appName) {
                         console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
                         installApp[appName].unmount()
                         delete installApp[appName]

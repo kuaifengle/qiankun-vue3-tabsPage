@@ -6,14 +6,14 @@
 
 <script>
 export default {
-  name: 'userDetail',
+  name: 'UserDetail',
   data() {
     return {
       value: '',
     }
   },
   mounted() {
-    console.log(this.$route.id)
+    // console.log(this.$route.id)
   },
 }
 </script>

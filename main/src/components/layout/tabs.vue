@@ -12,7 +12,7 @@
             :show-after="400 "
             :content="item.title"
             placement="bottom"
-            effect="customized"
+            effect="dark"
             :show-arrow="false"
           >
             <span class="tab-title">{{ item.title }}</span>
