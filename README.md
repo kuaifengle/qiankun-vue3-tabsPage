@@ -1,5 +1,10 @@
-# qiankun-vue3-tabsPage
 ## Vue3项目+ qiankun.js 实现多tab标签页路由切换
+
+```
+原理是通过监听主应用的vue-router的 router.beforeEach 方法来动态加载(loadMicroApp)微应用页面
+用vuex来管理已加载的微应用和tab标签数据
+监听用initialState的变化来执行对微页面内部的路由跳转
+```
 
 ```
 各依赖版本
@@ -9,7 +14,6 @@
 "vue-router": "^4.0.0-0",
 "vuex": "^4.0.0-0"
 ```
-
 
 #### 路由配置修改
 ```
@@ -27,7 +31,7 @@ export default {
                                         |=====>>>  2个name的值要相同
 ...                                     |
 lib: src/router/index.js                |
-    routes = [                             |
+    routes = [                          |
     {                                   |
         path: appPath + '/detail',      |
         name: 'App1Detail',     <<<=====
@@ -36,7 +40,7 @@ lib: src/router/index.js                |
     ]
 ```
 
-### 路由使用方法
+###  路由使用方法
 #### 主应用中路由跳转
 ```
 主应用使用的是原生的vue-router的方法
