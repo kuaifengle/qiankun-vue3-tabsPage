@@ -30,95 +30,129 @@ class Tabs {
 
     // 切换父级页面
     createIframePage(path, fullPath, query, params, meta, name) {
-        //  先判断跳转页面是否存在tabList
-        const find = store.getters['tabs/tabsList'].find((item) => item.path === path)
-        // 如果不存在活跃tab列表
-        if (find) {
-            store.dispatch('tabs/changeActiveTab', find)
-        } else {
-            store.dispatch('tabs/pushTabsList', {
-                appName: 'iframe', // 主应用
-                path,
-                fullPath,
-                query,
-                params,
-                title: meta.title,
-                name
-            })
-            store.dispatch('tabs/pushKeepAliveList', {
-                appName: 'iframe', // 主应用
-                name: name
-            })
-        }
+        return new Promise((resolve) => {
+            //  先判断跳转页面是否存在tabList 或者 存在它的父页面
+            const find = store.getters['tabs/tabsList'].find((item) => item.path.startsWith(path))
+            // 如果不存在活跃tab列表
+            if (find) {
+                store.dispatch('tabs/changeActiveTab', find)
+            } else {
+                store.dispatch('tabs/pushTabsList', {
+                    appName: 'iframe', // 主应用
+                    path,
+                    fullPath,
+                    query,
+                    params,
+                    title: meta.title,
+                    name
+                })
+                store.dispatch('tabs/pushKeepAliveList', {
+                    appName: 'iframe', // 主应用
+                    name: name
+                })
+            }
+            resolve(true)
+        })
+
     }
 
     // 切换微应用页面
     createMicoPage(path, fullPath, query, params) {
-        // 获取微应用配置
-        let installAppMap = {
-            ...store.getters['tabs/installAppMap']
-        }
-        try {
-            // 根据路径获取微应用config
-            const appConfig = findMicroAppByPath(path)
-            const routeObj = {
-                appName: appConfig.name,
-                path,
-                fullPath,
-                query,
-                params
+        return new Promise((resolve, reject) => {
+            // 获取微应用配置
+            let installAppMap = {
+                ...store.getters['tabs/installAppMap']
             }
-
-            // 先判断微应用是否已加载过
-            if (Object.hasOwnProperty.call(installAppMap, appConfig.name)) {
-                // 寻找是否存在页面 或者 存在它的父页面
-                const find = store.getters['tabs/tabsList'].find((item) => item.path.startsWith(path))
-
-                // 如果已经加载过页面了就切换tab
-                if (find) {
-                    store.dispatch('tabs/changeActiveTab', find)
-                } else {
-                    // 否者就添加tab页
-                    store.dispatch('tabs/pushTabsList', {
-                        ...routeObj,
-                        title: menusTitleMap[path] || query.pageTabTitle
-                    })
+            try {
+                // 根据路径获取微应用config
+                const appConfig = findMicroAppByPath(path)
+                const routeObj = {
+                    appName: appConfig.name,
+                    path,
+                    fullPath,
+                    query,
+                    params
                 }
-                setTimeout(() => {
-                    installAppMap[appConfig.name].update({
+
+                // 先判断微应用是否已加载过
+                if (Object.hasOwnProperty.call(installAppMap, appConfig.name)) {
+                    const find = store.getters['tabs/tabsList'].find((item) => item.path === path)
+
+                    // 如果已经加载过页面了就切换tab
+                    if (find) {
+                        if (decodeURI(find.fullPath) !== decodeURI(fullPath) && find.path === path) {
+                            ElMessageBox.confirm(
+                                '检测到该路由的Tabs标签页已在系统中存在,是否打开新页面或切换旧页面?',
+                                '系统提示', {
+                                confirmButtonText: '打开新页面',
+                                cancelButtonText: '切换旧页面',
+                                type: 'warning',
+                                showClose: false
+                            }
+                            )
+                                .then(() => {
+                                    store.dispatch('tabs/closeTabsList', find)
+                                    setTimeout(() => {
+                                        router.push({
+                                            path,
+                                            query,
+                                            params
+                                        })
+                                    }, 4)
+                                })
+                                .catch(() => {
+                                    store.dispatch('tabs/changeActiveTab', find)
+                                })
+                        } else {
+                            store.dispatch('tabs/changeActiveTab', find)
+                        }
+                    } else {
+                        // 否者就添加tab页
+                        store.dispatch('tabs/pushTabsList', {
+                            ...routeObj,
+                            title: menusTitleMap[path] || query.pageTabTitle
+                        })
+                    }
+
+                    setTimeout(() => {
+                        installAppMap[appConfig.name].update({
+                            routerEvent: {
+                                ...routeObj,
+                                type: find ? 'replace' : 'push' // 如果存在就是切换路由  否者就是添加
+                            }
+                        })
+                    }, 4)
+                    resolve(true)
+                    return
+                }
+
+                // 否者就首次加载微应用并跳转
+                installAppMap[appConfig.name] = loadMicroApp({
+                    ...appConfig,
+                    configuration: {
+                        singular: true
+                    },
+                    props: {
+                        $parentRouter: router,
+                        getGlobalState: actions.getGlobalState,
                         routerEvent: {
                             ...routeObj,
-                            type: find ? 'replace' : 'push' // 如果存在就是切换路由  否者就是添加
+                            type: 'push' // 第一次加载微页面只能push
                         }
-                    })
-                }, 4)
-                return
-            }
-
-            // 否者就首次加载微应用并跳转
-            installAppMap[appConfig.name] = loadMicroApp({
-                ...appConfig,
-                configuration: {
-                    singular: true
-                },
-                props: {
-                    $parentRouter: router,
-                    getGlobalState: actions.getGlobalState,
-                    routerEvent: {
-                        ...routeObj,
-                        type: 'push' // 第一次加载微页面只能push
                     }
-                }
-            })
+                })
 
-            setTimeout(() => {
-                routeObj.title = menusTitleMap[path] || query.pageTabTitle
-                store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
-                store.dispatch('tabs/pushTabsList', routeObj)
-            }, 4)
-        } catch (err) {
-            console.log(err)
-        }
+                setTimeout(() => {
+                    routeObj.title = menusTitleMap[path] || query.pageTabTitle
+                    store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
+                    store.dispatch('tabs/pushTabsList', routeObj)
+                }, 4)
+                resolve(true)
+            } catch (err) {
+                reject(false)
+                console.log(err)
+            }
+        })
     }
 
     // 打开tab
@@ -129,14 +163,19 @@ class Tabs {
             query, // query参数
             params,
             meta, // 其他参数
-            name
+            name,
+            next
         } = routes
         if (!isMicroApp(path)) {
             // 如果是非微应用页面直接跳转
-            this.createIframePage(path, fullPath, query, params, meta, name)
+            this.createIframePage(path, fullPath, query, params, meta, name).then((bool) => {
+                next(bool)
+            })
         } else {
             // 否者就是微应用
-            this.createMicoPage(path, fullPath, query, params)
+            this.createMicoPage(path, fullPath, query, params).then((bool) => {
+                next(bool)
+            })
         }
     }
 
@@ -145,8 +184,7 @@ class Tabs {
         if (item.path === store.getters['tabs/activeTab'].path) {
             return
         }
-        this.openTab(item);
-        router.replace(item.fullPath)
+        router.push(item.fullPath)
     }
 
     closeTab(item) {

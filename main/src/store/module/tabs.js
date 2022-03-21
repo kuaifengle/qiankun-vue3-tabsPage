@@ -25,6 +25,22 @@ export default {
             if (getters.tabsList.length < pageTabMax) {
                 commit('PUSH_TABS_LIST', data)
             } else {
+                // 如果不想tab数量超出时删除首页就打开下方注释 
+                // ===================  tabs数量超出pageTabMax就显示提示框  start =====================
+                // ElMessageBox.confirm(
+                //     '系统能同时存在最多' + pageTabMax + '个路由Tabs标签页,请删除不重要的Tabs后再跳转!',
+                //     '提示', {
+                //     showCancelButton: false,
+                //     confirmButtonText: '确定',
+                //     type: 'warning'
+                // }
+                // ).then(() => {
+                //     router.back()
+                // })
+                // ===================  tabs数量超出提示框  end =====================
+
+
+                // ===================  tabs数量超出pageTabMax了就删除第一个tab页 start =====================
                 // 否者超出了就删除第一个tab页  再push
                 let tabList = [...getters.tabsList]
                 let removeItem = tabList[0]
@@ -57,6 +73,7 @@ export default {
 
                 commit('CLOSE_TABS_LIST', tabList)
                 commit('PUSH_TABS_LIST', data)
+                // ===================  tabs数量超出了就删除第一个tab页 end =====================
             }
         },
         closeTabsList({
@@ -68,11 +85,16 @@ export default {
                 commit('CLOSE_TABS_LIST', [])
                 commit('CHANGE_ACTIVE_TAB', {})
 
-                // 销毁所有微应用
-                for (let name in getters.installAppMap) {
-                    console.warn('🚀🚀🚀微页面[' + name + ']已经销毁了!!!')
-                    getters.installAppMap[name].unmount()
+                try {
+                    // 销毁所有微应用
+                    for (let name in getters.installAppMap) {
+                        console.warn('🚀🚀🚀微页面[' + name + ']已经销毁了!!!')
+                        getters.installAppMap[name].unmount()
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
+
                 commit('PUSH_INSTALL_MRICOAPP_MAP', {})
 
                 //跳转首页
@@ -96,8 +118,15 @@ export default {
                 activeTab = tabList[0]
             } else {
                 // 都匹配不上就对比中间
-                tabList = tabList.filter((item) => item.path !== data.path)
-                activeTab = tabList[tabList.length - 1]
+                let findIndex = -1
+                tabList = tabList.filter((item, index) => {
+                    if (item.path !== data.path) {
+                        return item
+                    } else {
+                        findIndex = index > 1 ? index : 1
+                    }
+                })
+                activeTab = tabList[findIndex - 1]
             }
 
             const appName = data.appName
@@ -112,10 +141,14 @@ export default {
 
                 // 如果微应用没有活跃的tab了就销毁
                 if (!tabList.some((item) => item.appName === appName)) {
-                    console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
-                    installApp[appName].unmount()
-                    delete installApp[appName]
-                    commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
+                    try {
+                        console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
+                        installApp[appName].unmount()
+                        delete installApp[appName]
+                        commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
+                    } catch (error) {
+                        console.log(error)
+                    }
                 } else {
                     installApp[appName].update({
                         routerEvent: {
