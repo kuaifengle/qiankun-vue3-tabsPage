@@ -6,7 +6,7 @@ const pageTabMax = 3;
 export default {
     namespaced: true,
     state: {
-        installAppMap: {}, // 已安装的微应用
+        installAppMap: new Map(), // 已安装的微应用
         activeTab: {}, // 当前活跃tab索引
         tabsList: [], // 当前存在的tab页
         keepAliveList: {} // 需要保存状态的页面
@@ -68,36 +68,52 @@ export default {
                 commit('CLOSE_TABS_LIST', [])
                 commit('CHANGE_ACTIVE_TAB', {})
 
-                // 销毁所有微应用
-                for (let name in getters.installAppMap) {
-                    console.warn('🚀🚀🚀微页面[' + name + ']已经销毁了!!!')
-                    getters.installAppMap[name].unmount()
+                try {
+                    // 销毁所有微应用
+                    for (let name in getters.installAppMap) {
+                        console.warn('🚀🚀🚀微页面[' + name + ']已经销毁了!!!')
+                        getters.installAppMap[name].unmount()
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
+
                 commit('PUSH_INSTALL_MRICOAPP_MAP', {})
 
                 //跳转首页
                 router.replace('/')
                 return
             }
-
+            let nowActiveTab = JSON.parse(JSON.stringify(getters.activeTab))
             let tabList = [...getters.tabsList]
             let frist = tabList[0]
             let last = tabList[tabList.length - 1]
 
             let activeTab = null;
-
-            if (data.path === last['path']) {
+            if (nowActiveTab.path === data.path) {
+                // 如果删除的是当前活跃的tab
+                tabList = tabList.filter((item) => {
+                    if (nowActiveTab.path !== item.path) {
+                        return item
+                    }
+                })
+                activeTab = tabList[tabList.length - 1]
+            } else if (data.path === last['path']) {
                 // 先对比尾部
                 tabList.pop()
                 activeTab = tabList[tabList.length - 1]
             } else if (data.path === frist['path']) {
                 // 再对比头部
                 tabList.shift()
-                activeTab = tabList[0]
+                activeTab = nowActiveTab
             } else {
                 // 都匹配不上就对比中间
-                tabList = tabList.filter((item) => item.path !== data.path)
-                activeTab = tabList[tabList.length - 1]
+                tabList = tabList.filter((item) => {
+                    if (item.path !== data.path) {
+                        return item
+                    }
+                })
+                activeTab = nowActiveTab
             }
 
             const appName = data.appName
@@ -112,10 +128,14 @@ export default {
 
                 // 如果微应用没有活跃的tab了就销毁
                 if (!tabList.some((item) => item.appName === appName)) {
-                    console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
-                    installApp[appName].unmount()
-                    delete installApp[appName]
-                    commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
+                    try {
+                        console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
+                        installApp[appName].unmount()
+                        delete installApp[appName]
+                        commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
+                    } catch (error) {
+                        console.log(error)
+                    }
                 } else {
                     installApp[appName].update({
                         routerEvent: {
@@ -127,8 +147,10 @@ export default {
             }
 
             commit('CLOSE_TABS_LIST', tabList)
-            commit('CHANGE_ACTIVE_TAB', activeTab)
-            router.replace(activeTab.fullPath)
+            if (activeTab.path !== nowActiveTab.path) {
+                commit('CHANGE_ACTIVE_TAB', activeTab)
+                router.replace(activeTab.fullPath)
+            }
         },
         changeTabsList({
             commit

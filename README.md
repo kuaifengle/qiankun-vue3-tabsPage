@@ -32,7 +32,7 @@
 每个vue文件都要定义 [name] 属性, 并且要与 router/index.js 内部定义页面参数的 [name] 相同 如:
 lib: src/views/user.vue
 export default {
-    name: 'App1Detail',         >>>=====
+    name: 'App1Detail',         >>>=====|
     setup() {},                         |
     methods: {},                        |
     ...                                 |
@@ -40,13 +40,13 @@ export default {
                                         |=====>>>  2个name的值要相同
 ...                                     |
 lib: src/router/index.js                |
-    routes = [                          |
+routes = [                              |
     {                                   |
         path: appPath + '/detail',      |
-        name: 'App1Detail',     <<<=====
+        name: 'App1Detail',     <<<=====|
         component: () => import( '@/views/app1/detail.vue')
     }
-    ]
+]
 ```
 
 ###  路由使用方法

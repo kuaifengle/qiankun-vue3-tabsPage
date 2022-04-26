@@ -11,7 +11,6 @@ import Home from '../views/Home.vue'
 import tabs from '../qiankun/tabs'
 
 
-
 const routes = [{
   path: '/',
   name: 'Layout',
@@ -70,9 +69,9 @@ router.beforeEach((to, _form, next) => {
     return
   }
   tabs.openTab({
-    ...to
+    ...to,
+    next
   })
-  next()
 })
 
 // 页面进入之后

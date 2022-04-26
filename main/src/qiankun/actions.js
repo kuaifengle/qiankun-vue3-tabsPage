@@ -13,51 +13,58 @@ let initialState = reactive({
 // 全局状态
 const actions = initGlobalState(initialState);
 
+
 actions.onGlobalStateChange((newState) => {
   // state: 变更后的状态; prev 变更前的状态
-  // console.log('main change', JSON.stringify(newState), JSON.stringify(prev))
   for (const key in newState) {
     switch (key) {
       // 监听微应用tab切换
-      case 'changeMicoTabsPath':
-        if (newState['changeMicoTabsPath'].type === 'change') {
+      case 'changeMicoTabsPath': {
+        let str = JSON.stringify(newState['changeMicoTabsPath'])
+        let newPathObj = newState['changeMicoTabsPath']
+        if (str === '{}') {
+          initialState['changeMicoTabsPath'] = {};
+          return
+        } else if (newPathObj.type === 'change') {
           // 改变微应用子页面
           let getters = store.getters
           let activeTab = getters['tabs/activeTab'];
           let tabList = getters['tabs/tabsList'].slice()
+          if (!tabList.length) {
+            return
+          }
           let index = tabList.indexOf(tabList.find((item) => item.path === activeTab.path))
+
           let obj = {
             title: tabList[index]['title'],
-            path: newState['changeMicoTabsPath']['to']['path'],
-            fullPath: newState['changeMicoTabsPath']['to']['fullPath'],
-            query: newState['changeMicoTabsPath']['to']['query'],
-            appName: newState['changeMicoTabsPath']['appName']
+            path: newPathObj['to']['path'],
+            fullPath: newPathObj['to']['fullPath'],
+            query: newPathObj['to']['query'],
+            appName: newPathObj['appName']
           }
           tabList[index] = obj
           store.commit('tabs/CLOSE_TABS_LIST', tabList)
           store.commit('tabs/CHANGE_ACTIVE_TAB', obj)
-          newState['changeMicoTabsPath'] = null;
-        } else if (newState['changeMicoTabsPath'].type === 'closeActiveTab') {
+        } else if (newPathObj.type === 'closeActiveTab') {
           // 关闭当前活跃的tab
           store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
-          newState['changeMicoTabsPath'] = null;
-        } else if (newState['changeMicoTabsPath'].type === 'closeOtherTab') {
+        } else if (newPathObj.type === 'closeOtherTab') {
           // 关闭其他的的tab
-          let find = store.getters['tabs/tabsList'].find((item) => item.path === newState['changeMicoTabsPath'].path)
+          let find = store.getters['tabs/tabsList'].find((item) => item.path === newPathObj.path)
           if (find) {
             store.dispatch('tabs/closeTabsList', find)
           } else {
-            console.warn(newState['changeMicoTabsPath'].path + '关闭失败,该页面不在[tabs/tabsList]中!!!')
+            console.warn(newPathObj.path + '关闭失败,该页面不在[tabs/tabsList]中!!!')
           }
-          newState['changeMicoTabsPath'] = null;
         }
-        break;
-      default:
-        initialState[key] = newState[key]
-        break;
+      }
+      break;
+    default:
+      initialState[key] = newState[key]
+      break;
     }
   }
-})
+}, false)
 
 // 定义一个获取state的方法下发到子应用
 actions.getGlobalState = async function (key) {

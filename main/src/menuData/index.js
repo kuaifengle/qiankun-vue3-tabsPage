@@ -33,4 +33,4 @@ menuDataList.forEach((item) => {
     map[item['path']] = item['title']
 })
 
-export const menusTitleMap = map;
+export const menuTitleData = map;

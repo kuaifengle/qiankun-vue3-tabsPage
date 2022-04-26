@@ -33,6 +33,10 @@ function render(props = {}) {
 
     router.beforeEach((to, _form, next) => {
         if (_form.path !== '/') {
+            if (to.path === '/empty') {
+                next()
+                return
+            }
             let {
                 parentName,
                 childrenName
@@ -76,10 +80,9 @@ function render(props = {}) {
     if (routerEvent) {
         // 如果首次跳转子页面就直接跳到父级页面 
         let path = routes.find(item => item.path === routerEvent.path)
-        if (path['meta'] && path['meta']['parentName']) {
+        if (path && path['meta'] && path['meta']['parentName']) {
             let parent = routes.find(item => item.name === path['meta']['parentName'])
             $parentRouter.push(parent.path)
-            store.commit('PUSH_KEEPALIVE_LIST', parent.name)
             store.commit('PUSH_KEEPALIVE_LIST', parent.name)
             action.setGlobalState({
                 changeMicoTabsPath: {
@@ -114,6 +117,7 @@ export async function bootstrap() {
 export async function mount(props) {
     // console.log('[vue] props from main framework', props);
     action.setActions(props)
+    console.log('app2  渲染')
 
     render(props);
 }
@@ -126,17 +130,23 @@ export async function update(props) {
 
     if (routerEvent) {
         switch (routerEvent.type) {
-            case 'push':
+            case 'push': {
                 router.push(routerEvent.path)
                 store.commit('PUSH_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path)['name'])
-                break
-            case 'replace':
-                router.push(routerEvent.path)
-                break
-            case 'close': {
-                store.commit('CLOSE_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path))
             }
             break
+        case 'replace': {
+            router.replace(routerEvent.path)
+        }
+        break
+        case 'close': {
+            store.commit('CLOSE_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path))
+        }
+        break
+        case 'visible': {
+            router.push('/empty')
+        }
+        break
         }
     }
 }

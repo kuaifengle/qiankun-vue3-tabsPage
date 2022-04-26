@@ -27,7 +27,7 @@
         <tabs></tabs>
         <div v-show="!$route.name">
           <div
-            v-show="item.name === activeTab.appName"
+            v-show="item.name === activeTab.appName" 
             v-for="item in microAppConfig"
             :key="item.name"
             :id="item.id"

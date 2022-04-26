@@ -9,6 +9,7 @@
 
 <script>
 import { getCurrentInstance } from 'vue'
+
 export default {
   name: 'About',
   setup() {

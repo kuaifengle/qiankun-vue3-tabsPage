@@ -1,8 +1,9 @@
 const appPath = '/app2'
-const routes = [{
+const routes = [
+  {
     path: appPath + '/user',
     name: 'User',
-    component: () => import( /* webpackChunkName: "about" */ '../views/user/user.vue'),
+    component: () => import( /* webpackChunkName: "about" */ '@/views/user/user.vue'),
     meta: {
       childrenName: ['UserDetail']
     }
@@ -10,7 +11,7 @@ const routes = [{
   {
     path: appPath + '/user/detail',
     name: 'UserDetail',
-    component: () => import( /* webpackChunkName: "about" */ '../views/user/userDetail.vue'),
+    component: () => import( /* webpackChunkName: "about" */ '@/views/user/userDetail.vue'),
     meta: {
       parentName: 'User',
     }
@@ -18,7 +19,12 @@ const routes = [{
   {
     path: appPath + '/about',
     name: 'About',
-    component: () => import( /* webpackChunkName: "about" */ '../views/about.vue')
+    component: () => import( /* webpackChunkName: "about" */ '@/views/about.vue')
+  },
+  {
+    path: '/empty',
+    name: 'Empty',
+    component: () => import( /* webpackChunkName: "empty" */ '../views/empty.vue')
   }
 ]
 
