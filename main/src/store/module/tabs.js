@@ -1,4 +1,7 @@
 import router from '@/router/index.js'
+import {
+    ElMessageBox
+} from 'element-plus'
 
 // tab最多个数
 const pageTabMax = 3;
