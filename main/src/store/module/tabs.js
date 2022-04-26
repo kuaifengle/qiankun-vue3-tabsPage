@@ -25,38 +25,52 @@ export default {
             if (getters.tabsList.length < pageTabMax) {
                 commit('PUSH_TABS_LIST', data)
             } else {
+                // 不允许tabs的数量超过pageTabMax个数
+                ElMessageBox.confirm(
+                    '系统能同时存在最多' + pageTabMax + '个路由Tabs标签页,请删除不重要的Tabs后再跳转!',
+                    '提示', {
+                        showCancelButton: false,
+                        confirmButtonText: '确定',
+                        type: 'warning'
+                    }
+                ).then(() => {
+                    router.back()
+                })
+
                 // 否者超出了就删除第一个tab页  再push
-                let tabList = [...getters.tabsList]
-                let removeItem = tabList[0]
-                tabList.shift()
+                // if (window.alert('系统能同时存在最多' + pageTabMax + '个路由Tabs标签页,超出限制时将关闭第一个Tabs标签页!确定跳转并关闭首个Tabs标签页吗?')) {
+                //     let tabList = [...getters.tabsList]
+                //     let removeItem = tabList[0]
+                //     tabList.shift()
 
-                const appName = removeItem.appName
-                // 如果是主应用
-                if (appName === 'iframe') {
-                    getters.keepAliveList['iframe'] = getters.keepAliveList['iframe'].filter((item) => item !== removeItem.name)
-                } else {
-                    // 否者是微应用
-                    let installApp = {
-                        ...getters.installAppMap
-                    }
-                    // 如果微应用没有活跃的tab了就销毁 并且 跳转的不是当前微应用的页面
-                    if (!tabList.some((item) => item.appName === appName) && appName !== data.appName) {
-                        console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
-                        installApp[appName].unmount()
-                        delete installApp[appName]
-                        commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
-                    } else {
-                        installApp[appName] && installApp[appName].update({
-                            routerEvent: {
-                                path: removeItem.path,
-                                type: 'close'
-                            }
-                        })
-                    }
-                }
+                //     const appName = removeItem.appName
+                //     // 如果是主应用
+                //     if (appName === 'iframe') {
+                //         getters.keepAliveList['iframe'] = getters.keepAliveList['iframe'].filter((item) => item !== removeItem.name)
+                //     } else {
+                //         // 否者是微应用
+                //         let installApp = {
+                //             ...getters.installAppMap
+                //         }
+                //         // 如果微应用没有活跃的tab了就销毁 并且 跳转的不是当前微应用的页面
+                //         if (!tabList.some((item) => item.appName === appName) && appName !== data.appName) {
+                //             console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
+                //             installApp[appName].unmount()
+                //             delete installApp[appName]
+                //             commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
+                //         } else {
+                //             installApp[appName] && installApp[appName].update({
+                //                 routerEvent: {
+                //                     path: removeItem.path,
+                //                     type: 'close'
+                //                 }
+                //             })
+                //         }
+                //     }
 
-                commit('CLOSE_TABS_LIST', tabList)
-                commit('PUSH_TABS_LIST', data)
+                //     commit('CLOSE_TABS_LIST', tabList)
+                //     commit('PUSH_TABS_LIST', data)
+                // }
             }
         },
         closeTabsList({
