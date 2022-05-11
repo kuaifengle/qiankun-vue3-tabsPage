@@ -40,6 +40,7 @@ export default {
       },
     ]
     let closeActiveTab = () => {
+      console.log(action)
       action.setGlobalState({
         changeMicoTabsPath: {
           type: 'closeActiveTab',

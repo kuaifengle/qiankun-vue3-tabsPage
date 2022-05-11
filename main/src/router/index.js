@@ -7,7 +7,7 @@ import {
 
 import Layout from '@/components/layout/index.vue'
 import Child from '@/views/child.vue'
-import Home from '../views/Home.vue'
+import Home from '../views/home.vue'
 import tabs from '../qiankun/tabs'
 
 
@@ -30,7 +30,7 @@ const routes = [{
     {
       path: '/about',
       name: 'About',
-      component: () => import( /* webpackChunkName: "about" */ '../views/About.vue'),
+      component: () => import( /* webpackChunkName: "about" */ '../views/about.vue'),
       meta: {
         title: '关于'
       }
@@ -38,7 +38,7 @@ const routes = [{
     {
       path: '/user',
       name: 'User',
-      component: () => import( /* webpackChunkName: "about" */ '../views/user.vue'),
+      component: () => import( /* webpackChunkName: "user" */ '../views/user.vue'),
       meta: {
         title: '用户'
       }

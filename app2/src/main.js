@@ -153,7 +153,6 @@ export async function update(props) {
 
 
 export async function unmount() {
-    store.commit('RESET_KEEPALIVE_LIST', [])
     instance.unmount();
     instance._container.innerHTML = '';
     instance = null;

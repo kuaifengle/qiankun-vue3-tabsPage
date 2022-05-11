@@ -4,12 +4,12 @@ import {
 } from 'element-plus'
 
 // tab最多个数
-const pageTabMax = 3;
+const pageTabMax = 6;
 
 export default {
     namespaced: true,
     state: {
-        installAppMap: new Map(), // 已安装的微应用
+        installAppMap: {}, // 已安装的微应用
         activeTab: {}, // 当前活跃tab索引
         tabsList: [], // 当前存在的tab页
         keepAliveList: {} // 需要保存状态的页面
@@ -28,7 +28,6 @@ export default {
             if (getters.tabsList.length < pageTabMax) {
                 commit('PUSH_TABS_LIST', data)
             } else {
-                // 不允许tabs的数量超过pageTabMax个数
                 ElMessageBox.confirm(
                     '系统能同时存在最多' + pageTabMax + '个路由Tabs标签页,请删除不重要的Tabs后再跳转!',
                     '提示', {
@@ -39,9 +38,9 @@ export default {
                 ).then(() => {
                     router.back()
                 })
-
-                // 否者超出了就删除第一个tab页  再push
+                /* eslint-disable */
                 // if (window.alert('系统能同时存在最多' + pageTabMax + '个路由Tabs标签页,超出限制时将关闭第一个Tabs标签页!确定跳转并关闭首个Tabs标签页吗?')) {
+                //     // 否者超出了就删除第一个tab页  再push
                 //     let tabList = [...getters.tabsList]
                 //     let removeItem = tabList[0]
                 //     tabList.shift()
@@ -125,9 +124,12 @@ export default {
                 activeTab = nowActiveTab
             } else {
                 // 都匹配不上就对比中间
-                tabList = tabList.filter((item) => {
+                let findIndex = -1
+                tabList = tabList.filter((item, index) => {
                     if (item.path !== data.path) {
                         return item
+                    } else {
+                        findIndex = index > 1 ? index : 1
                     }
                 })
                 activeTab = nowActiveTab

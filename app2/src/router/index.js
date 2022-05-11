@@ -3,15 +3,23 @@ const routes = [
   {
     path: appPath + '/user',
     name: 'User',
-    component: () => import( /* webpackChunkName: "about" */ '@/views/user/user.vue'),
+    component: () => import( /* webpackChunkName: "user" */ '@/views/user/user.vue'),
     meta: {
-      childrenName: ['UserDetail']
+      childrenName: ['UserDetail', 'UserInfo']
     }
   },
   {
     path: appPath + '/user/detail',
     name: 'UserDetail',
     component: () => import( /* webpackChunkName: "about" */ '@/views/user/userDetail.vue'),
+    meta: {
+      parentName: 'User',
+    }
+  },
+  {
+    path: appPath + '/user/info',
+    name: 'UserInfo',
+    component: () => import( /* webpackChunkName: "about" */ '@/views/user/userInfo.vue'),
     meta: {
       parentName: 'User',
     }

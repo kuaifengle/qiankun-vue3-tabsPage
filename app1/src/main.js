@@ -130,13 +130,11 @@ export async function update(props) {
         switch (routerEvent.type) {
             case 'push': {
                 router.push(routerEvent.path)
-                store.commit('CHANGE_ROUTER_VIEWS_VISIBLE', true)
                 store.commit('PUSH_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path)['name'])
             }
             break
         case 'replace': {
             router.replace(routerEvent.path)
-            store.commit('CHANGE_ROUTER_VIEWS_VISIBLE', true)
         }
         break
         case 'close': {

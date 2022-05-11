@@ -1,10 +1,6 @@
 import {
     loadMicroApp
 } from 'qiankun';
-import {
-    ElMessageBox
-} from 'element-plus'
-
 import store from '@/store';
 import router from '@/router/index.js';
 import {
@@ -55,7 +51,6 @@ class Tabs {
             }
             resolve(true)
         })
-
     }
 
     // 切换微应用页面
@@ -76,17 +71,18 @@ class Tabs {
                     params
                 }
 
-                for (let appName in installAppMap) {
-                    if (appName === appConfig.name) {
-                        continue;
-                    }
-                    (async function () {
+                // 隐藏所有app页面 减少页面dom元素
+                const visibleAllApp = async () => {
+                    for (let appName in installAppMap) {
+                        if (appName === appConfig.name) {
+                            continue;
+                        }
                         await installAppMap[appName].update({
                             routerEvent: {
                                 type: 'visible' // 如果不是当前活跃的就隐藏
                             }
                         })
-                    })()
+                    }
                 }
 
                 // 先判断微应用是否已加载过
@@ -96,28 +92,19 @@ class Tabs {
                     // 如果已经加载过页面了就切换tab
                     if (find) {
                         if (decodeURI(find.fullPath) !== decodeURI(fullPath) && find.path === path) {
-                            ElMessageBox.confirm(
-                                    '检测到该路由的Tabs标签页已在系统中存在,是否打开新页面或切换旧页面?',
-                                    '系统提示', {
-                                        confirmButtonText: '打开新页面',
-                                        cancelButtonText: '切换旧页面',
-                                        type: 'warning',
-                                        showClose: false
-                                    }
-                                )
-                                .then(() => {
-                                    store.dispatch('tabs/closeTabsList', find)
-                                    setTimeout(() => {
-                                        router.push({
-                                            path,
-                                            query,
-                                            params
-                                        })
-                                    }, 4)
+                            /* eslint-disable */
+                            let bool = confirm('检测到该路由的Tabs标签页已在系统中存在,是否打开新页面或切换旧页面?')
+                            if (bool) {
+                                visibleAllApp()
+                                store.dispatch('tabs/closeTabsList', find)
+                                router.push({
+                                    path,
+                                    query,
+                                    params
                                 })
-                                .catch(() => {
-                                    store.dispatch('tabs/changeActiveTab', find)
-                                })
+                            }
+                            resolve(false)
+                            return
                         } else {
                             store.dispatch('tabs/changeActiveTab', find)
                         }
@@ -128,22 +115,20 @@ class Tabs {
                             title: menuTitleData[path] || query.pageTabTitle
                         })
                     }
+                    visibleAllApp()
 
-
-                    setTimeout(() => {
-                        installAppMap[appConfig.name] && installAppMap[appConfig.name].update({
-                            routerEvent: {
-                                ...routeObj,
-                                type: find ? 'replace' : 'push' // 如果存在就是切换路由  否者就是添加
-                            }
-                        })
-                        resolve(true)
-                    }, 4)
-
+                    installAppMap[appConfig.name] && installAppMap[appConfig.name].update({
+                        routerEvent: {
+                            ...routeObj,
+                            type: find ? 'replace' : 'push' // 如果存在就是切换路由  否者就是添加
+                        }
+                    })
+                    resolve(true)
                     return
                 }
 
                 // 否者就首次加载微应用并跳转
+                visibleAllApp()
                 installAppMap[appConfig.name] = loadMicroApp({
                     ...appConfig,
                     configuration: {
@@ -151,7 +136,7 @@ class Tabs {
                     },
                     props: {
                         $parentRouter: router,
-                        getGlobalState: actions.getGlobalState,
+                        actions: actions,
                         routerEvent: {
                             ...routeObj,
                             type: 'push' // 第一次加载微页面只能push
@@ -159,16 +144,14 @@ class Tabs {
                     }
                 })
 
-                setTimeout(() => {
-                    routeObj.title = menuTitleData[path] || query.pageTabTitle
-                    store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
-                    store.dispatch('tabs/pushTabsList', routeObj)
-                }, 4)
+                routeObj.title = menuTitleData[path] || query.pageTabTitle
+                store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
+                store.dispatch('tabs/pushTabsList', routeObj)
 
                 resolve(true)
             } catch (err) {
-                reject(false)
                 console.log(err)
+                reject(false)
             }
         })
     }

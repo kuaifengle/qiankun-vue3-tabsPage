@@ -26,6 +26,10 @@ export const menuDataList = [{
         title: 'App2-About',
         path: '/app2/about',
     },
+    {
+        title: '再次打开->App2-About',
+        path: '/app2/about?id=123&age=999岁&name=kuaifengle',
+    },
 ]
 
 let map = {}
