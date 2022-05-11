@@ -42,7 +42,7 @@ function render(props = {}) {
                 childrenName
             } = to.meta
             // 判断如果是父级跳转子集页面 或者 子集跳转父级页面
-            if ((parentName && parentName === _form.name) || (childrenName && childrenName.some((item) => item === _form.name))) {
+            if ((parentName && parentName === _form.name) || (childrenName && childrenName.some((item) => item === _form.name)) || (parentName === _form.meta.parentName)) {
                 store.commit('CLOSE_KEEPALIVE_LIST', _form)
                 store.commit('PUSH_KEEPALIVE_LIST', to['name'])
                 action.setGlobalState({
