@@ -11,5 +11,12 @@ export const microAppConfig = [{
         entry: process.env.NODE_ENV !== 'production' ? '//localhost:7002' : '/subPages/app2/',
         container: '#container-2',
         activeRule: '/app2'
+    },
+    {
+        id: 'container-3',
+        name: 'app3',
+        entry: process.env.NODE_ENV !== 'production' ? '//localhost:7003' : '/subPages/app3/',
+        container: '#container-3',
+        activeRule: '/app3'
     }
 ]

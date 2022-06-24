@@ -42,7 +42,7 @@ function render(props = {}) {
                 childrenName
             } = to.meta
             // 判断如果是父级跳转子集页面 或者 子集跳转父级页面
-            if ((parentName && parentName === _form.name) || (childrenName && childrenName.some((item) => item === _form.name)) || (parentName === _form.meta.parentName)) {
+            if ((parentName && parentName === _form.name) || (childrenName && childrenName.some((item) => item === _form.name)) || (parentName && _form.meta.parentName && parentName === _form.meta.parentName)) {
                 store.commit('CLOSE_KEEPALIVE_LIST', _form)
                 store.commit('PUSH_KEEPALIVE_LIST', to['name'])
                 action.setGlobalState({
@@ -79,7 +79,8 @@ function render(props = {}) {
     if (routerEvent) {
         // 如果首次跳转子页面就直接跳到父级页面 
         let path = routes.find(item => item.path === routerEvent.path)
-        if (path && path['meta'] && path['meta']['parentName']) {
+        // 页面路由跳转加上?mustJump=true  可以强制跳转子页面
+        if ((path && path.mate && path.meta.parentName) && !(routerEvent && routerEvent.query && routerEvent.query.mustJump)) {
             let parent = routes.find(item => item.name === path['meta']['parentName'])
             $parentRouter.push(parent.path)
             store.commit('PUSH_KEEPALIVE_LIST', parent.name)
@@ -95,13 +96,15 @@ function render(props = {}) {
                 }
             })
             return
+        } else {
+            // 否者 首次加载微页面
+            router.push({
+                path: routerEvent.fullPath,
+                query: routerEvent.query
+            })
+            let find = routes.find(item => item.path === routerEvent.path)
+            find && store.commit('PUSH_KEEPALIVE_LIST', find.name)
         }
-        // 否者 首次加载微页面
-        router.push({
-            path: routerEvent.fullPath,
-            query: routerEvent.query
-        })
-        store.commit('PUSH_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path)['name'])
     }
 }
 

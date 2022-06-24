@@ -50,6 +50,10 @@ const routes = [{
     {
       path: '/app2:pathMatch(.*)',
       component: Child
+    },
+    {
+      path: '/app3:pathMatch(.*)',
+      component: Child
     }
     // {
     //     path: '/:pathMatch(.*)*',

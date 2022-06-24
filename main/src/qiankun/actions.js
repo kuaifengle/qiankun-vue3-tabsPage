@@ -1,5 +1,6 @@
 import {
-  initGlobalState
+  initGlobalState,
+  addGlobalUncaughtErrorHandler
 } from 'qiankun';
 import {
   reactive
@@ -12,6 +13,20 @@ let initialState = reactive({
 
 // 全局状态
 const actions = initGlobalState(initialState);
+
+let errorCount = 0
+// 全局的未捕获异常处理器
+addGlobalUncaughtErrorHandler((event) => {
+  errorCount += 1
+  if (errorCount === 3) {
+    errorCount = 0
+    if (String(event.reason) === 'TypeError: Failed to fetch') {
+      /* eslint-disable */
+      alert('页面加载失败,即将关闭当前标签页!')
+      store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
+    }
+  }
+});
 
 actions.onGlobalStateChange((newState) => {
   console.log(newState)
@@ -42,7 +57,6 @@ actions.onGlobalStateChange((newState) => {
             store.commit('tabs/CHANGE_ACTIVE_TAB', obj)
           }
         } else if (newPathObj.type === 'closeActiveTab') {
-          console.log(123)
           // 关闭当前活跃的tab
           store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
         } else if (newPathObj.type === 'closeOtherTab') {
@@ -55,10 +69,10 @@ actions.onGlobalStateChange((newState) => {
           }
         }
       }
-        break;
-      default:
-        initialState[key] = newState[key]
-        break;
+      break;
+    default:
+      initialState[key] = newState[key]
+      break;
     }
   }
 }, false)

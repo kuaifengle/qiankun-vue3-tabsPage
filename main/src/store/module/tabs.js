@@ -75,7 +75,7 @@ export default {
                 // }
             }
         },
-        closeTabsList({
+        async closeTabsList({
             getters,
             commit
         }, data) {
@@ -88,7 +88,10 @@ export default {
                     // 销毁所有微应用
                     for (let name in getters.installAppMap) {
                         console.warn('🚀🚀🚀微页面[' + name + ']已经销毁了!!!')
-                        getters.installAppMap[name].unmount()
+                        let app = getters.installAppMap[name]
+                        if (app && app.getStatus() == 'MOUNTED') {
+                            app.unmount()
+                        }
                     }
                 } catch (error) {
                     console.log(error)
@@ -149,7 +152,9 @@ export default {
                 if (!tabList.some((item) => item.appName === appName)) {
                     try {
                         console.warn('🚀🚀🚀微页面[' + appName + ']已经销毁了!!!')
-                        installApp[appName].unmount()
+                        if (installApp[appName].getStatus() == 'MOUNTED') {
+                            installApp[appName].unmount()
+                        }
                         delete installApp[appName]
                         commit('PUSH_INSTALL_MRICOAPP_MAP', installApp)
                     } catch (error) {
@@ -167,8 +172,8 @@ export default {
 
             commit('CLOSE_TABS_LIST', tabList)
             if (activeTab.path !== nowActiveTab.path) {
+                await router.replace(activeTab.fullPath)
                 commit('CHANGE_ACTIVE_TAB', activeTab)
-                router.replace(activeTab.fullPath)
             }
         },
         changeTabsList({

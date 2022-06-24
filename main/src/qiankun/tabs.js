@@ -28,7 +28,18 @@ const findMicroAppByPath = function (path) {
 class Tabs {
     // 切换父级页面
     createIframePage(path, fullPath, query, params, meta, name) {
+        // 获取微应用配置
+        let installAppMap = {
+            ...store.getters['tabs/installAppMap']
+        }
         return new Promise((resolve) => {
+            for (let appName in installAppMap) {
+                installAppMap[appName].update({
+                    routerEvent: {
+                        type: 'visible' // 如果不是当前活跃的就隐藏
+                    }
+                })
+            }
             //  先判断跳转页面是否存在tabList 或者 存在它的父页面
             const find = store.getters['tabs/tabsList'].find((item) => item.path.startsWith(path))
             // 如果不存在活跃tab列表
@@ -145,8 +156,8 @@ class Tabs {
                 })
 
                 routeObj.title = menuTitleData[path] || query.pageTabTitle
-                store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
                 store.dispatch('tabs/pushTabsList', routeObj)
+                store.dispatch('tabs/pushInstallMricoAppMap', installAppMap)
 
                 resolve(true)
             } catch (err) {
@@ -167,6 +178,10 @@ class Tabs {
             name,
             next
         } = routes
+
+        if (store.getters['tabs/activeTab'].path === path) {
+            return
+        }
         if (!isMicroApp(path)) {
             // 如果是非微应用页面直接跳转
             this.createIframePage(path, fullPath, query, params, meta, name).then((bool) => {
