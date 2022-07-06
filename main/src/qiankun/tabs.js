@@ -79,7 +79,8 @@ class Tabs {
                     path,
                     fullPath,
                     query,
-                    params
+                    params,
+                    id: appConfig.id
                 }
 
                 // 隐藏所有app页面 减少页面dom元素
@@ -140,11 +141,9 @@ class Tabs {
 
                 // 否者就首次加载微应用并跳转
                 visibleAllApp()
+                store.dispatch('tabs/changeAppLoading', true)
                 installAppMap[appConfig.name] = loadMicroApp({
                     ...appConfig,
-                    configuration: {
-                        singular: true
-                    },
                     props: {
                         $parentRouter: router,
                         actions: actions,
@@ -162,6 +161,7 @@ class Tabs {
                 resolve(true)
             } catch (err) {
                 console.log(err)
+                store.dispatch('tabs/changeAppLoading', false)
                 reject(false)
             }
         })

@@ -105,6 +105,16 @@ function render(props = {}) {
             let find = routes.find(item => item.path === routerEvent.path)
             find && store.commit('PUSH_KEEPALIVE_LIST', find.name)
         }
+
+
+        requestAnimationFrame(() => {
+            action.setGlobalState({
+                changeMicoTabsPath: {
+                    type: "changeLoading",
+                    loading: false
+                }
+            })
+        })
     }
 }
 
@@ -132,12 +142,12 @@ export async function update(props) {
     if (routerEvent) {
         switch (routerEvent.type) {
             case 'push': {
-                router.push(routerEvent.path)
+                router.push(routerEvent.fullPath)
                 store.commit('PUSH_KEEPALIVE_LIST', routes.find(item => item.path === routerEvent.path)['name'])
             }
             break
         case 'replace': {
-            router.replace(routerEvent.path)
+            router.replace(routerEvent.fullPath)
         }
         break
         case 'close': {

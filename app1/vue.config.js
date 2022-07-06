@@ -5,7 +5,7 @@ const {
 const isDevelopment = process.env.NODE_ENV === 'development' // 判断是否是生产环境
 
 module.exports = {
-    publicPath: isDevelopment ? '' : `/subPages/${name}/`,
+    publicPath: isDevelopment ? '' : `/qiankun-vue3-tabsPage-demo/subPages/${name}/`,
     outputDir: '../dist/subPages/' + name,
     productionSourceMap: isDevelopment,
     devServer: {

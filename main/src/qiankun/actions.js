@@ -20,6 +20,7 @@ addGlobalUncaughtErrorHandler((event) => {
   errorCount += 1
   if (errorCount === 3) {
     errorCount = 0
+    store.dispatch('tabs/changeAppLoading', false)
     if (String(event.reason) === 'TypeError: Failed to fetch') {
       /* eslint-disable */
       alert('页面加载失败,即将关闭当前标签页!')
@@ -36,10 +37,11 @@ actions.onGlobalStateChange((newState) => {
       // 监听微应用tab切换
       case 'changeMicoTabsPath': {
         let newPathObj = newState['changeMicoTabsPath']
-        if (!newPathObj['type']) {
+        if (newPathObj.type === 'changeLoading') {
+          store.dispatch('tabs/changeAppLoading', newPathObj.loading)
           initialState['changeMicoTabsPath'] = {};
         } else if (newPathObj.type === 'change') {
-          // 改变微应用子页面s
+          // 改变微应用子页面
           let activeTab = store.getters['tabs/activeTab'];
           let tabList = store.getters['tabs/tabsList'].slice()
           if (tabList.length) {
@@ -59,6 +61,7 @@ actions.onGlobalStateChange((newState) => {
         } else if (newPathObj.type === 'closeActiveTab') {
           // 关闭当前活跃的tab
           store.dispatch('tabs/closeTabsList', store.getters['tabs/activeTab'])
+          initialState['changeMicoTabsPath'] = {};
         } else if (newPathObj.type === 'closeOtherTab') {
           // 关闭其他的的tab
           let find = store.getters['tabs/tabsList'].find((item) => item.path === newPathObj.path)

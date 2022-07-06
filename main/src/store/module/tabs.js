@@ -9,6 +9,7 @@ const pageTabMax = 6;
 export default {
     namespaced: true,
     state: {
+        appLoading: false, // 加载状态
         installAppMap: {}, // 已安装的微应用
         activeTab: {}, // 当前活跃tab索引
         tabsList: [], // 当前存在的tab页
@@ -190,6 +191,15 @@ export default {
             commit
         }, data) {
             commit('PUSH_KEEPALIVE_LIST', data)
+        },
+        changeAppLoading({
+            state,
+            commit
+        }, data) {
+            if (state.appLoading === data) {
+                return
+            }
+            commit('CHANGE_APP_LOADING', data)
         }
     },
     mutations: {
@@ -217,12 +227,17 @@ export default {
             } else {
                 state.keepAliveList[data.appName].push(data.name)
             }
+        },
+        // 添加挂载微应用
+        ['CHANGE_APP_LOADING'](state, data) {
+            state.appLoading = data
         }
     },
     getters: {
         installAppMap: (state) => state.installAppMap, // 已经加载过的App
         tabsList: (state) => state.tabsList, // 已存在的tab列表
         activeTab: (state) => state.activeTab, // 活跃的tab
-        keepAliveList: (state) => state.keepAliveList // 活跃的tab
+        keepAliveList: (state) => state.keepAliveList, // 活跃的tab
+        appLoading: (state) => state.appLoading // loading  
     }
 }

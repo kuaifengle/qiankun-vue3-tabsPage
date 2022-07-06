@@ -25,11 +25,11 @@
       <el-main id="mainBox">
         <div>主应用的已缓存的页面有: =====> {{ keepAliveList['iframe'] || '[暂无]' }}</div>
         <tabs></tabs>
-        <div v-show="!$route.name">
+        <div v-show="!$route.name" v-loading="appLoading" element-loading-text="加载页面中, 请稍后...">
           <div
-            v-show="item.name === activeTab.appName" 
-            v-for="item in microAppConfig"
-            :key="item.name"
+            v-for="item in tabsList"
+            v-show="item.appName === activeTab.appName"
+            :key="item.appName"
             :id="item.id"
           ></div>
         </div>
@@ -48,7 +48,6 @@
 </template>
 
 <script>
-import { microAppConfig } from '@/qiankun/config.js'
 
 import tabs from './tabs.vue'
 import { menuDataList } from '@/menuData/index.js'
@@ -60,7 +59,6 @@ export default {
   },
   data() {
     return {
-      microAppConfig,
       menuDataList,
     }
   },
@@ -68,6 +66,8 @@ export default {
     ...mapGetters({
       keepAliveList: 'tabs/keepAliveList',
       activeTab: 'tabs/activeTab',
+      tabsList: 'tabs/tabsList',
+      appLoading: 'tabs/appLoading',
     }),
   },
   setup() {},

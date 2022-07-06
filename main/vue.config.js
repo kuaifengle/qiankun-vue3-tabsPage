@@ -8,7 +8,7 @@ const isDevelopment = process.env.NODE_ENV === 'development' // 判断是否是�
 
 module.exports = {
     outputDir: '../dist',
-    publicPath: '/',
+    publicPath: isDevelopment ? '/' :'/qiankun-vue3-tabsPage-demo',
     productionSourceMap: isDevelopment,
     devServer: {
         open: true,
